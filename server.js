@@ -35,7 +35,7 @@ app.get("/api/hello", function (req, res) {
 
 //regular expression that checks for url format ///
 
-const regExp = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+const regExp = /^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
 
 //****************** needs to check and update mongodb //
 
@@ -49,11 +49,12 @@ app.post("/api/shorturl/new", (req, res, next) => {
   const original_url = req.body.url;
   console.log("you are here");
   if (regExp.test(original_url) === false) {
-    next(error);
+    console.log(regExp.test(original_url));
+    throw new Error('invalid URL');
+    next(err);
   }
   console.log(regExp.test(original_url));
   const short_url = getShorty(original_url);
-  console.log("you are here");
   res.json({
     original_url: original_url,
     short_url: short_url,
@@ -62,7 +63,7 @@ app.post("/api/shorturl/new", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   res.status(404);
-  res.json({ error: "invalid URL" });
+  res.json({ error: err.message });
 });
 
 app.listen(port, function () {
