@@ -33,19 +33,30 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
-const regExp = /@"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$"/;
+//regular expression that checks for url format ///
+
+const regExp = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+
+//****************** needs to check and update mongodb //
+
+const getShorty = (longUrl) => {
+  const shortUrl = null;
+  
+  return shortUrl;
+};
 
 app.post("/api/shorturl/new", (req, res, next) => {
   const original_url = req.body.url;
   console.log("you are here");
-  /*if (regExp.test(original_url) === false) {
-    next(error);}*/
-  const short_url = "";
+  if (regExp.test(original_url) === false) {
+    next(error);
+  }
+  console.log(regExp.test(original_url));
+  const short_url = getShorty(original_url);
   console.log("you are here");
   res.json({
     original_url: original_url,
     short_url: short_url,
-    validurl: regExp.test(original_url),
   });
 });
 
