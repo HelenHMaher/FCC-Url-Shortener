@@ -5,6 +5,7 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 
 var cors = require('cors');
+const bodyParser = require('body-parser');
 
 var app = express();
 
@@ -15,7 +16,7 @@ var port = process.env.PORT || 3000;
 // mongoose.connect(process.env.DB_URI);
 
 app.use(cors());
-
+app.use(bodyParser.urlencoded([extended = false]))
 /** this project needs to parse POST bodies **/
 // you should mount the body-parser here
 
