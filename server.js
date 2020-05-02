@@ -33,15 +33,20 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
-const regEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(:[0-9]+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
+const regExp = /@"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$"/;
 
 app.post("/api/shorturl/new", (req, res, next) => {
   const original_url = req.body.url;
-  if(regEx.test(original_url) === false) {
-    next(error);
-  }
+  console.log("you are here");
+  /*if (regExp.test(original_url) === false) {
+    next(error);}*/
   const short_url = "";
-  res.json({original_url: original_url, short_url: short_url, validurl: regEx.test(original_url)})
+  console.log("you are here");
+  res.json({
+    original_url: original_url,
+    short_url: short_url,
+    validurl: regExp.test(original_url),
+  });
 });
 
 app.use((err, req, res, next) => {
