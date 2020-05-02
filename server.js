@@ -35,12 +35,15 @@ app.get("/api/hello", function (req, res) {
 
 //regular expression that checks for url format ///
 
-const regExp = /^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+const regExp = /^(?:http(s)?:\/\/)[\w]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
 
 //****************** needs to check and update mongodb //
 
 const getShorty = (longUrl) => {
   const shortUrl = null;
+  if(/\/$/.test(longUrl)) {
+    longUrl = longUrl.slice(0, -1);
+  }
   
   return shortUrl;
 };
