@@ -68,10 +68,21 @@ const urlSchema = new Schema({
 });
 
 const counterSchema = new Schema({
-  
+  counter: {type: Number, required: true}
 })
 
-const UrlEntry = mongoose.model("urlEntry", urlSchema);
+const UrlEntry = mongoose.model("UrlEntry", urlSchema);
+const Counter = mongoose.model("Counter", counterSchema)
+
+const updateCounter = () => {
+  Counter.findOneAndUpdate({$inc: {counter: 1}}, (err, data) => {
+    if (err) return;
+    if (data) return data.counter;
+    else {
+      Counter.create({counter: 1}, (err, ))
+    }
+  })
+}
 
 const getShorty = (longUrl) => {
   const shortUrl = null;
@@ -82,7 +93,7 @@ const getShorty = (longUrl) => {
     if (err) return;
     if (urlFound) {shortUrl = urlFound.id;}
     else {
-      UrlEntry.create({url: longUrl, id: 1}, (err, entry) => {
+      UrlEntry.create({url: longUrl, id: updateCounter()}, (err, entry) => {
         if(err) return;
         shortUrl = entry.id;
       })
