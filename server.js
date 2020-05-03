@@ -39,16 +39,17 @@ app.get("/api/hello", function (req, res) {
 const regExp = /^(?:http[s]?:\/\/)([\w]+[\w\.-]*)[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.%]*$/i;
 
 const validateUrl = (original_url) => {
-  const host = regExp.match(original_url);
+  const host = original_url.match(regExp);
+  console.log(host[1]);
   if (regExp.test(original_url) === false) {
-    return false;
+    return "invalid URL";
   } else {
-    dns.lookup(host[0], (err, address, family) => {
+    dns.lookup(host[1], (err, address, family) => {
       if (err) {
-        return false;
+        return "invalid host";
       } else {
         console.log("address:", address);
-        return true;
+        return "true";
       }
     });
   }
@@ -64,20 +65,24 @@ const getShorty = (longUrl) => {
   return shortUrl;
 };
 
+//*****POST request********//
+
 app.post("/api/shorturl/new", (req, res, next) => {
   const original_url = req.body.url;
   console.log("post request received");
-  if(validateUrl(original_url) === false) {
-    console.log(regExp.test(original_url));
+  validateUrl(original_url);
+  if (validateUrl(original_url) !== "true") {
+    console.log(validateUrl(original_url));
     throw new Error("invalid URL");
     next(err);
+  } else {
+    console.log(validateUrl(original_url));
+    const short_url = getShorty(original_url);
+    res.json({
+      original_url: original_url,
+      short_url: short_url,
+    });
   }
-  console.log(regExp.test(original_url));
-  const short_url = getShorty(original_url);
-  res.json({
-    original_url: original_url,
-    short_url: short_url,
-  });
 });
 
 app.use((err, req, res, next) => {
