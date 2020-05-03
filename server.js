@@ -6,6 +6,7 @@ var mongoose = require("mongoose");
 
 var cors = require("cors");
 const bodyParser = require("body-parser");
+const dns = require("dns");
 
 var app = express();
 
@@ -37,6 +38,22 @@ app.get("/api/hello", function (req, res) {
 
 const regExp = /^(?:http[s]?:\/\/)([\w]+[\w\.-]*)[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.%]*$/i;
 
+const validateUrl = (original_url) => {
+  const host = regExp.match(original_url);
+  if (regExp.test(original_url) === false) {
+    return false;
+  } else {
+    dns.lookup(host[0], (err, address, family) => {
+      if (err) {
+        return false;
+      } else {
+        console.log("address:", address);
+        return true;
+      }
+    });
+  }
+};
+
 //****************** needs to check and update mongodb //
 
 const getShorty = (longUrl) => {
@@ -44,25 +61,13 @@ const getShorty = (longUrl) => {
   if (/\/$/.test(longUrl)) {
     longUrl = longUrl.slice(0, -1);
   }
-
-const validateUrl = (original_url) => {
-  const host = regExp.match(original_url);
-  if(regExp.test(original_url) === false) {
-    return false
-  } else {
-    dns.lookup(host[0], (err) => {
-
-  })
-  }
-}
-
   return shortUrl;
 };
 
 app.post("/api/shorturl/new", (req, res, next) => {
   const original_url = req.body.url;
-  console.log("you are here");
-  if (regExp.test(original_url) === false) {
+  console.log("post request received");
+  if(validateUrl(original_url) === false) {
     console.log(regExp.test(original_url));
     throw new Error("invalid URL");
     next(err);
