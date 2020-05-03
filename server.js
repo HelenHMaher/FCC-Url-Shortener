@@ -39,20 +39,23 @@ app.get("/api/hello", function (req, res) {
 const regExp = /^(?:http[s]?:\/\/)([\w]+[\w\.-]*)[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.%]*$/i;
 
 const validateUrl = (original_url) => {
-  const host = original_url.match(regExp);
-  console.log(host[1]);
-  if (regExp.test(original_url) === false) {
-    return "invalid URL";
+  let host = null;
+  if (regExp.test(original_url)) {
+    host = original_url.match(regExp);
   } else {
-    dns.lookup(host[1], (err, address, family) => {
-      if (err) {
-        return "invalid host";
-      } else {
-        console.log("address:", address);
-        return "true";
-      }
-    });
+    console.log("invalid URL");
+    return false;
   }
+  console.log(host);
+  dns.lookup(host[1], (err, address, family) => {
+    if (err) {
+      console.log("invalid host");
+      return false;
+    } else {
+      console.log("address:", address);
+      return true;
+    }
+  });
 };
 
 //****************** needs to check and update mongodb //
@@ -70,7 +73,7 @@ const getShorty = (longUrl) => {
 app.post("/api/shorturl/new", (req, res, next) => {
   const original_url = req.body.url;
   console.log("post request received");
-  validateUrl(original_url);
+  console.log(validateUrl(original_url));
   if (validateUrl(original_url) !== "true") {
     console.log(validateUrl(original_url));
     throw new Error("invalid URL");
