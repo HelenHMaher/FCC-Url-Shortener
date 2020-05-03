@@ -67,6 +67,10 @@ const urlSchema = new Schema({
   id: {type: Number, required: true}
 });
 
+const counterSchema = new Schema({
+  
+})
+
 const UrlEntry = mongoose.model("urlEntry", urlSchema);
 
 const getShorty = (longUrl) => {
@@ -75,10 +79,14 @@ const getShorty = (longUrl) => {
     longUrl = longUrl.slice(0, -1);
   }
   UrlEntry.find({url: longUrl}, (err, urlFound)=> {
-    if (err) {
-      UrlEntry.create()
+    if (err) return;
+    if (urlFound) {shortUrl = urlFound.id;}
+    else {
+      UrlEntry.create({url: longUrl, id: 1}, (err, entry) => {
+        if(err) return;
+        shortUrl = entry.id;
+      })
     }
-    else {shortUrl = urlFound.id;}
   })
   return shortUrl;
 };
