@@ -58,13 +58,16 @@ const validateUrl = (original_url) => {
   });
 };
 
-//****************** needs to check and update mongodb //
+//****************** needs to check and update mongodb ******//
+
+const Schema = mongoose.Sche
 
 const getShorty = (longUrl) => {
   const shortUrl = null;
   if (/\/$/.test(longUrl)) {
     longUrl = longUrl.slice(0, -1);
   }
+
   return shortUrl;
 };
 
@@ -73,13 +76,10 @@ const getShorty = (longUrl) => {
 app.post("/api/shorturl/new", (req, res, next) => {
   const original_url = req.body.url;
   console.log("post request received");
-  console.log(validateUrl(original_url));
-  if (validateUrl(original_url) !== "true") {
-    console.log(validateUrl(original_url));
+  if (validateUrl(original_url) === false) {
     throw new Error("invalid URL");
     next(err);
   } else {
-    console.log(validateUrl(original_url));
     const short_url = getShorty(original_url);
     res.json({
       original_url: original_url,
