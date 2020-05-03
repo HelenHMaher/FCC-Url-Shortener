@@ -60,14 +60,26 @@ const validateUrl = (original_url) => {
 
 //****************** needs to check and update mongodb ******//
 
-const Schema = mongoose.Sche
+const Schema = mongoose.Schema;
+
+const urlSchema = new Schema({
+ url: {type: String, required: true},
+  id: {type: Number, required: true}
+});
+
+const UrlEntry = mongoose.model("urlEntry", urlSchema);
 
 const getShorty = (longUrl) => {
   const shortUrl = null;
   if (/\/$/.test(longUrl)) {
     longUrl = longUrl.slice(0, -1);
   }
-
+  UrlEntry.find({url: longUrl}, (err, urlFound)=> {
+    if (err) {
+      UrlEntry.create()
+    }
+    else {shortUrl = urlFound.id;}
+  })
   return shortUrl;
 };
 
