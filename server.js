@@ -63,42 +63,46 @@ const validateUrl = (original_url) => {
 const Schema = mongoose.Schema;
 
 const urlSchema = new Schema({
- url: {type: String, required: true},
-  id: {type: Number, required: true}
+  url: { type: String, required: true },
+  id: { type: Number, required: true },
 });
 
 const counterSchema = new Schema({
-  counter: {type: Number, required: true}
-})
+  counter: { type: Number, required: true },
+});
 
 const UrlEntry = mongoose.model("UrlEntry", urlSchema);
-const Counter = mongoose.model("Counter", counterSchema)
+const Counter = mongoose.model("Counter", counterSchema);
 
 const updateCounter = () => {
-  Counter.findOneAndUpdate({$inc: {counter: 1}}, (err, data) => {
+  Counter.findOneAndUpdate({ $inc: { counter: 1 } }, (err, data) => {
     if (err) return;
     if (data) return data.counter;
     else {
-      Counter.create({counter: 1}, (err, ))
+      Counter.create({ counter: 1 }, (err, data) => {
+        if (err) return;
+        return data.counter;
+      });
     }
-  })
-}
+  });
+};
 
 const getShorty = (longUrl) => {
   const shortUrl = null;
   if (/\/$/.test(longUrl)) {
     longUrl = longUrl.slice(0, -1);
   }
-  UrlEntry.find({url: longUrl}, (err, urlFound)=> {
+  UrlEntry.find({ url: longUrl }, (err, urlFound) => {
     if (err) return;
-    if (urlFound) {shortUrl = urlFound.id;}
-    else {
-      UrlEntry.create({url: longUrl, id: updateCounter()}, (err, entry) => {
-        if(err) return;
+    if (urlFound) {
+      shortUrl = urlFound.id;
+    } else {
+      UrlEntry.create({ url: longUrl, id: updateCounter() }, (err, entry) => {
+        if (err) return;
         shortUrl = entry.id;
-      })
+      });
     }
-  })
+  });
   return shortUrl;
 };
 
