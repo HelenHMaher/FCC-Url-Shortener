@@ -45,8 +45,15 @@ const getShorty = (longUrl) => {
     longUrl = longUrl.slice(0, -1);
   }
 
-const validateUrl = (longUrl) => {
-  
+const validateUrl = (original_url) => {
+  const host = regExp.match(original_url);
+  if(regExp.test(original_url) === false) {
+    return false
+  } else {
+    dns.lookup(host[0], (err) => {
+
+  })
+  }
 }
 
   return shortUrl;
