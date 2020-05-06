@@ -79,8 +79,10 @@ const updateCounter = () => {
     if (err) return console.log(err);
     if (data) return data.counter;
     else {
-      const newCounter = new Counter({ counter: 1 }, (err, data) => {
+      const newCounter = new Counter({ counter: 1 });
+      newCounter.save((err, data) => {
         if (err) return;
+        console.log(data.counter);
         return data.counter;
       });
     }
@@ -88,13 +90,15 @@ const updateCounter = () => {
 };
 
 const getShorty = (longUrl) => {
-  const shortUrl = null;
+  console.log("getShorty");
   UrlEntry.find({ url: longUrl }, (err, urlFound) => {
     if (err) return console.log(err);
     if (urlFound) {
-      shortUrl = urlFound.id;
+      console.log(urlFound);
+      return urlFound.id;
     } else {
-      shortUrl = updateCounter();
+      console.log("url not found in db");
+      const shortUrl = updateCounter();
       const newUrlEntry = new UrlEntry({
         url: longUrl,
         id: shortUrl,
@@ -121,7 +125,7 @@ app.post("/api/shorturl/new", (req, res, next) => {
       longUrl = longUrl.slice(0, -1);
       console.log(longUrl);
     }
-    let short_url = getShorty(longUrl);
+    const short_url = getShorty(longUrl);
     res.json({
       original_url: longUrl,
       short_url: short_url,
