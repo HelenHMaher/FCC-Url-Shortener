@@ -94,7 +94,7 @@ UrlEntry.create({ url: longUrl, id: updateCounter() }, (err, entry) => {
 const getShorty = (longUrl) => {
   const shortUrl = null;
   UrlEntry.find({ url: longUrl }, (err, urlFound) => {
-    if (err) return;
+    if (err) return console.log(err);
     if (urlFound) {
       shortUrl = urlFound.id;
     } else {
