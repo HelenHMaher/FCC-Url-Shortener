@@ -91,9 +91,10 @@ const updateCounter = () => {
 
 const getShorty = (longUrl) => {
   console.log("getShorty");
-  UrlEntry.find({ url: longUrl }, (err, urlFound) => {
+  UrlEntry.findOne({ url: longUrl }, (err, urlFound) => {
     if (err) return console.log(err);
     if (urlFound) {
+      console.log("found");
       console.log(urlFound);
       return urlFound.id;
     } else {
@@ -106,7 +107,7 @@ const getShorty = (longUrl) => {
       newUrlEntry.save((err, data) => {
         if (err) return console.log(err);
         console.log(data);
-        return shortUrl;
+        return data.id;
       });
     }
   });
