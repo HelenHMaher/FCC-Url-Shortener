@@ -93,7 +93,6 @@ UrlEntry.create({ url: longUrl, id: updateCounter() }, (err, entry) => {
 
 const getShorty = (longUrl) => {
   const shortUrl = null;
-  
   UrlEntry.find({ url: longUrl }, (err, urlFound) => {
     if (err) return;
     if (urlFound) {
@@ -102,25 +101,27 @@ const getShorty = (longUrl) => {
       createAndSave(longUrl);
     }
   });
-  res.json({
-      original_url: original_url,
-      short_url: short_url,
-    });
+
 };
 
 //*****POST request********//
 
 app.post("/api/shorturl/new", (req, res, next) => {
-  const original_url = req.body.url;
+  const longUrl = req.body.url;
   console.log("post request received");
-  if (validateUrl(original_url) === false) {
+  if (validateUrl(longUrl) === false) {
     throw new Error("invalid URL");
     next(err);
   } else {
     if (/\/$/.test(longUrl)) {
     longUrl = longUrl.slice(0, -1);
-  }
-  getShorty(original_url);
+    console.log(longUrl);
+    } 
+  getShorty(longUrl);
+  res.json({
+    original_url: longUrl,
+    short_url: short_url,
+    });
   }
 });
 
