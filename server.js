@@ -76,20 +76,16 @@ const Counter = mongoose.model("Counter", counterSchema);
 
 const updateCounter = () => {
   Counter.findOneAndUpdate({ $inc: { counter: 1 } }, (err, data) => {
-    if (err) return console.log("updateCounter findOneAndUpdate Error");
+    if (err) return console.log(err);
     if (data) return data.counter;
     else {
-      Counter.create({ counter: 1 }, (err, data) => {
+      const newCounter = new Counter({ counter: 1 }, (err, data) => {
         if (err) return;
         return data.counter;
       });
     }
   });
 };
-
-UrlEntry.create({ url: longUrl, id: updateCounter() }, (err, entry) => {
-        if (err) return;
-        shortUrl = entry.id;
 
 const getShorty = (longUrl) => {
   const shortUrl = null;
@@ -98,10 +94,18 @@ const getShorty = (longUrl) => {
     if (urlFound) {
       shortUrl = urlFound.id;
     } else {
-      createAndSave(longUrl);
+      shortUrl = updateCounter();
+      const newUrlEntry = new UrlEntry({
+        url: longUrl,
+        id: shortUrl,
+      });
+      newUrlEntry.save((err, data) => {
+        if (err) return console.log(err);
+        console.log(data);
+        return shortUrl;
+      });
     }
   });
-
 };
 
 //*****POST request********//
@@ -114,13 +118,13 @@ app.post("/api/shorturl/new", (req, res, next) => {
     next(err);
   } else {
     if (/\/$/.test(longUrl)) {
-    longUrl = longUrl.slice(0, -1);
-    console.log(longUrl);
-    } 
-  getShorty(longUrl);
-  res.json({
-    original_url: longUrl,
-    short_url: short_url,
+      longUrl = longUrl.slice(0, -1);
+      console.log(longUrl);
+    }
+    let short_url = getShorty(longUrl);
+    res.json({
+      original_url: longUrl,
+      short_url: short_url,
     });
   }
 });
