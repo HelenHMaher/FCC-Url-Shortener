@@ -87,23 +87,25 @@ const updateCounter = () => {
   });
 };
 
+UrlEntry.create({ url: longUrl, id: updateCounter() }, (err, entry) => {
+        if (err) return;
+        shortUrl = entry.id;
+
 const getShorty = (longUrl) => {
   const shortUrl = null;
-  if (/\/$/.test(longUrl)) {
-    longUrl = longUrl.slice(0, -1);
-  }
+  
   UrlEntry.find({ url: longUrl }, (err, urlFound) => {
     if (err) return;
     if (urlFound) {
       shortUrl = urlFound.id;
     } else {
-      UrlEntry.create({ url: longUrl, id: updateCounter() }, (err, entry) => {
-        if (err) return;
-        shortUrl = entry.id;
-      });
+      createAndSave(longUrl);
     }
   });
-  return shortUrl;
+  res.json({
+      original_url: original_url,
+      short_url: short_url,
+    });
 };
 
 //*****POST request********//
@@ -115,11 +117,10 @@ app.post("/api/shorturl/new", (req, res, next) => {
     throw new Error("invalid URL");
     next(err);
   } else {
-    const short_url = getShorty(original_url);
-    res.json({
-      original_url: original_url,
-      short_url: short_url,
-    });
+    if (/\/$/.test(longUrl)) {
+    longUrl = longUrl.slice(0, -1);
+  }
+  getShorty(original_url);
   }
 });
 
