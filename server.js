@@ -64,7 +64,7 @@ const Schema = mongoose.Schema;
 
 const urlSchema = new Schema({
   url: { type: String, required: true },
-  id: { type: Number, required: true },
+  index: { type: Number, required: true },
 });
 
 const counterSchema = new Schema({
@@ -89,34 +89,12 @@ const updateCounter = () => {
   });
 };
 
-const getShorty = (longUrl) => {
-  console.log("getShorty");
-  UrlEntry.findOne({ url: longUrl }, (err, urlFound) => {
-    if (err) return console.log(err);
-    if (urlFound) {
-      console.log("found");
-      console.log(urlFound);
-      return urlFound.id;
-    } else {
-      console.log("url not found in db");
-      const shortUrl = updateCounter();
-      const newUrlEntry = new UrlEntry({
-        url: longUrl,
-        id: shortUrl,
-      });
-      newUrlEntry.save((err, data) => {
-        if (err) return console.log(err);
-        console.log(data);
-        return data.id;
-      });
-    }
-  });
-};
+
 
 //*****POST request********//
 
 app.post("/api/shorturl/new", (req, res, next) => {
-  const longUrl = req.body.url;
+  let longUrl = req.body.url;
   console.log("post request received");
   if (validateUrl(longUrl) === false) {
     throw new Error("invalid URL");
@@ -126,10 +104,32 @@ app.post("/api/shorturl/new", (req, res, next) => {
       longUrl = longUrl.slice(0, -1);
       console.log(longUrl);
     }
-    const short_url = getShorty(longUrl);
+    console.log("getShorty");
+    UrlEntry.findOne({ url: longUrl }, (err, urlFound) => {
+      if (err) return console.log(err);
+      if (urlFound) {
+          console.log("found");
+          console.log(urlFound.index);
+          return urlFound.index;
+      } else {
+          console.log("url not found in db");
+          const shortUrl = updateCounter();
+          const newUrlEntry = new UrlEntry({
+            url: longUrl,
+            index: 5,
+          });
+          newUrlEntry.save((err, data) => {
+            if (err) return console.log(err);
+            console.log(data);
+            return data.index;
+          });
+        }
+      });
+    };
+    console.log(short_url, "here");
     res.json({
       original_url: longUrl,
-      short_url: short_url,
+      short_url: urlFound.index,
     });
   }
 });
