@@ -75,15 +75,14 @@ const UrlEntry = mongoose.model("UrlEntry", urlSchema);
 const Counter = mongoose.model("Counter", counterSchema);
 
 const updateCounter = (req, res, callback) => {
-  Counter.findOneAndUpdate({ $inc: { counter: 1 } }, (err, data) => {
+  Counter.findOneAndUpdate({}, { $inc: { counter: 1 } }, (err, data) => {
     if (err) return console.log(err);
     if (data) callback(data.counter);
     else {
       const newCounter = new Counter({ counter: 1 });
       newCounter.save((err, data) => {
-        if (err) return;
-        console.log(data.counter);
-        return data.counter;
+        if (err) return console.log(err);
+        callback(data.counter);
       });
     }
   });
@@ -106,7 +105,7 @@ app.post("/api/shorturl/new", (req, res, next) => {
     UrlEntry.findOne({ url: longUrl }, (err, urlFound) => {
       if (err) return console.log(err);
       if (urlFound) {
-        console.log("found");
+        console.log("found in db");
         console.log(urlFound.index);
         res.json({
           original_url: longUrl,
@@ -132,6 +131,14 @@ app.post("/api/shorturl/new", (req, res, next) => {
     });
   }
 });
+
+//*****GET requetst******//
+
+app.get("/api/shorturl/:shorturl", (req, res, next) => {
+  
+})
+
+
 
 app.use((err, req, res, next) => {
   res.status(404);
