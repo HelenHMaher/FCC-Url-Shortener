@@ -76,7 +76,7 @@ const Counter = mongoose.model("Counter", counterSchema);
 
 const updateCounter = () => {
   Counter.findOneAndUpdate({ $inc: { counter: 1 } }, (err, data) => {
-    if (err) return;
+    if (err) return console.log("updateCounter findOneAndUpdate Error");
     if (data) return data.counter;
     else {
       Counter.create({ counter: 1 }, (err, data) => {
