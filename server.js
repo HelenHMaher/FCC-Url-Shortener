@@ -74,10 +74,10 @@ const counterSchema = new Schema({
 const UrlEntry = mongoose.model("UrlEntry", urlSchema);
 const Counter = mongoose.model("Counter", counterSchema);
 
-const updateCounter = () => {
+const updateCounter = (req, res, callback) => {
   Counter.findOneAndUpdate({ $inc: { counter: 1 } }, (err, data) => {
     if (err) return console.log(err);
-    if (data) return data.counter;
+    if (data) callback(data.counter);
     else {
       const newCounter = new Counter({ counter: 1 });
       newCounter.save((err, data) => {
@@ -88,8 +88,6 @@ const updateCounter = () => {
     }
   });
 };
-
-
 
 //*****POST request********//
 
@@ -108,28 +106,29 @@ app.post("/api/shorturl/new", (req, res, next) => {
     UrlEntry.findOne({ url: longUrl }, (err, urlFound) => {
       if (err) return console.log(err);
       if (urlFound) {
-          console.log("found");
-          console.log(urlFound.index);
-          return urlFound.index;
+        console.log("found");
+        console.log(urlFound.index);
+        res.json({
+          original_url: longUrl,
+          short_url: urlFound.index,
+        });
       } else {
-          console.log("url not found in db");
-          const shortUrl = updateCounter();
+        console.log("url not found in db");
+        updateCounter(req, res, (count) => {
           const newUrlEntry = new UrlEntry({
             url: longUrl,
-            index: 5,
+            index: count,
           });
           newUrlEntry.save((err, data) => {
             if (err) return console.log(err);
             console.log(data);
-            return data.index;
+            res.json({
+              original_url: longUrl,
+              short_url: data.index,
+            });
           });
-        }
-      });
-    };
-    console.log(short_url, "here");
-    res.json({
-      original_url: longUrl,
-      short_url: urlFound.index,
+        });
+      }
     });
   }
 });
