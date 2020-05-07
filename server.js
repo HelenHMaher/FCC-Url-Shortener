@@ -84,9 +84,8 @@ const updateCounter = (req, res, callback) => {
         if (err) return console.log(err);
         Counter.findOneAndUpdate({}, {$inc: {counter: 1}}, (err, data) => {
           if(err) return console.log(err);
-          
+          callback(data.counter);
         })
-        callback(data.counter);
       });
     }
   });
@@ -140,17 +139,19 @@ app.post("/api/shorturl/new", (req, res, next) => {
 
 app.get("/api/shorturl/:shorturl", (req, res, next) => {
   const shortUrl = req.params.shorturl;
+  const parsedUrl = parseInt(shortUrl);
+  if(isNan(parsedUrl)) {
+    res.json({error: "short url needs to be a number"});
+  }
   console.log("shortUrl: ", shortUrl);
-  if (shortUrl === Number) {
-    UrlEntry.findOne({index: shortUrl}, (err, data) => {
-      if(err) return console.log(err);
-      if(data) {
-        res.redirect(data.url);
-      } else {
-        res.json({error: "short url not found"})
-      }
-    })
-  } else {res.json({error: "short url must be a number"});}
+  UrlEntry.findOne({index: shortUrl}, (err, data) => {
+    if(err) return console.log(err);
+    if(data) {
+      res.redirect(data.url);
+    } else {
+      res.json({error: "short url not found"})
+    }
+  })
 })
 
 
