@@ -68,7 +68,7 @@ const urlSchema = new Schema({
 });
 
 const counterSchema = new Schema({
-  counter: { type: Number, required: true },
+  counter: { type: Number, required: true},
 });
 
 const UrlEntry = mongoose.model("UrlEntry", urlSchema);
@@ -79,9 +79,13 @@ const updateCounter = (req, res, callback) => {
     if (err) return console.log(err);
     if (data) callback(data.counter);
     else {
-      const newCounter = new Counter({ counter: 1 });
+      const newCounter = new Counter({ counter: 0 });
       newCounter.save((err, data) => {
         if (err) return console.log(err);
+        Counter.findOneAndUpdate({}, {$inc: {counter: 1}}, (err, data) => {
+          if(err) return console.log(err);
+          
+        })
         callback(data.counter);
       });
     }
@@ -140,7 +144,11 @@ app.get("/api/shorturl/:shorturl", (req, res, next) => {
   if (shortUrl === Number) {
     UrlEntry.findOne({index: shortUrl}, (err, data) => {
       if(err) return console.log(err);
-      if(data) res.redirect(data.url);
+      if(data) {
+        res.redirect(data.url);
+      } else {
+        res.json({error: "short url not found"})
+      }
     })
   } else {res.json({error: "short url must be a number"});}
 })
