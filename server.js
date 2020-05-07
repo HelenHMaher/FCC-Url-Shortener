@@ -135,7 +135,14 @@ app.post("/api/shorturl/new", (req, res, next) => {
 //*****GET requetst******//
 
 app.get("/api/shorturl/:shorturl", (req, res, next) => {
-  
+  const shortUrl = req.params.shorturl;
+  console.log("shortUrl: ", shortUrl);
+  if (shortUrl === Number) {
+    UrlEntry.findOne({index: shortUrl}, (err, data) => {
+      if(err) return console.log(err);
+      if(data) res.redirect(data.url);
+    })
+  } else {res.json({error: "short url must be a number"});}
 })
 
 
